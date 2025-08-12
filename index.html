@@ -217,6 +217,46 @@
         </section>
     </div>
 
+    <script>
+
+
+        async function generateWithGemini(prompt) {
+            const res = await fetch(
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD1Aj_sNEpBH807lfVN2ZJPARF1bubMBBA",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                }
+            );
+            const data = await res.json();
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "No content generated.";
+        }
+
+        generateBtn.addEventListener("click", async () => {
+            const topic = document.getElementById("topic").value.trim();
+            const extra = document.getElementById("extra").value.trim();
+            const tone = getSelectedTone();
+            const type = getSelectedType();
+
+            outType.textContent = type[0].toUpperCase() + type.slice(1);
+            outTone.textContent = tone[0].toUpperCase() + tone.slice(1);
+
+            previewContent.textContent = "Generating from Gemini AI...";
+
+            const prompt = `Write a ${tone} ${type} social media post about: ${topic || "any topic"}. Include: ${extra || "no extra instructions"}.`;
+            try {
+                const aiText = await generateWithGemini(prompt);
+                previewContent.textContent = aiText;
+            } catch (err) {
+                previewContent.textContent = "Error generating content.";
+                console.error(err);
+            }
+        });
+    </script>
+
 
     <script>
 
